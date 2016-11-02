@@ -1,0 +1,253 @@
+# i3 config file (v4)
+#
+# Please see http://i3wm.org/docs/userguide.html for a complete reference!
+
+set $mod Mod4
+set $mod2 Mod3
+
+# Font for window titles. Will also be used by the bar unless a different font
+# is used in the bar {} block below. ISO 10646 = Unicode
+font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+# The font above is very space-efficient, that is, it looks good, sharp and
+# clear in small sizes. However, if you need a lot of unicode glyphs or
+# right-to-left text rendering, you should instead use pango for rendering and
+# chose a FreeType font, such as:
+font pango:DejaVu Sans Mono 11
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# start a terminal
+bindsym $mod+Return exec i3-sensible-terminal
+
+# kill focused window
+bindsym $mod+Shift+Q kill
+
+# start dmenu (a program launcher)
+bindsym $mod+d exec dmenu_run -nb '#191919' -nf '#9ac0cd' -sb '#191919' -sf '#ffac33'
+# There also is the (new) i3-dmenu-desktop which only displays applications
+# shipping a .desktop file. It is a wrapper around dmenu, so you need that
+# installed.
+# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+
+# change focus
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+#bindsym $mod+l focus up
+bindsym $mod+semicolon focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# move focused window
+bindsym $mod+Shift+j move left
+bindsym $mod+Shift+k move down
+bindsym $mod+Shift+l move up
+bindsym $mod+Shift+colon move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $mod+h split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+#bindsym $mod+d focus child
+
+# workspaces name
+set $tag1 "1: "
+set $tag2 "2: "
+set $tag3 "3: "
+set $tag4 "4: "
+set $tag5 "5: "
+set $tag6 "6: "
+set $tag7 "7: "
+set $tag8 "8 "
+set $tag9 "9: "
+set $tag10 "10: "
+set $tag11 "11: "
+set $tag12 "12: "
+set $tag13 "13: "
+set $tag14 "14: "
+set $tag15 "15: "
+set $tag16 "16: "
+set $tag17 "17: "
+set $tag18 "18: "
+set $tag19 "19: "
+set $tag20 "20: "
+
+# WINDOW CONTROL 
+assign [class="sublime-text-2"] $tag9
+assign [class="Pidgin"] $tag6
+assign [class="VirtualBox"] $tag7
+assign [class="(?i)thunderbird"] $tag2
+
+# switch to workspace
+bindsym $mod+1 workspace $tag1
+bindsym $mod+2 workspace $tag2
+bindsym $mod+3 workspace $tag3
+bindsym $mod+4 workspace $tag4
+bindsym $mod+5 workspace $tag5
+bindsym $mod+6 workspace $tag6
+bindsym $mod+7 workspace $tag7
+bindsym $mod+8 workspace $tag8
+bindsym $mod+9 workspace $tag9
+bindsym $mod+0 workspace $tag10
+bindsym $mod2+1 workspace $tag11
+bindsym $mod2+2 workspace $tag12
+bindsym $mod2+3 workspace $tag13
+bindsym $mod2+4 workspace $tag14
+bindsym $mod2+5 workspace $tag15
+bindsym $mod2+6 workspace $tag16
+bindsym $mod2+7 workspace $tag17
+bindsym $mod2+8 workspace $tag18
+bindsym $mod2+9 workspace $tag19
+bindsym $mod2+0 workspace $tag20
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $tag1
+bindsym $mod+Shift+2 move container to workspace $tag2
+bindsym $mod+Shift+3 move container to workspace $tag3
+bindsym $mod+Shift+4 move container to workspace $tag4
+bindsym $mod+Shift+5 move container to workspace $tag5
+bindsym $mod+Shift+6 move container to workspace $tag6
+bindsym $mod+Shift+7 move container to workspace $tag7
+bindsym $mod+Shift+8 move container to workspace $tag8
+bindsym $mod+Shift+9 move container to workspace $tag9
+bindsym $mod+Shift+0 move container to workspace $tag10
+bindsym $mod2+Shift+1 move container to workspace $tag11
+bindsym $mod2+Shift+2 move container to workspace $tag12
+bindsym $mod2+Shift+3 move container to workspace $tag13
+bindsym $mod2+Shift+4 move container to workspace $tag14
+bindsym $mod2+Shift+5 move container to workspace $tag15
+bindsym $mod2+Shift+6 move container to workspace $tag16
+bindsym $mod2+Shift+7 move container to workspace $tag17
+bindsym $mod2+Shift+8 move container to workspace $tag18
+bindsym $mod2+Shift+9 move container to workspace $tag19
+bindsym $mod2+Shift+0 move container to workspace $tag20
+
+# move workspace to screen
+#bindsym $mod+Shift+l move workspace to output left
+bindsym $mod+Shift+m move workspace to output right
+
+#Lauches program at startup
+exec --no-startup-id i3-msg '$tag1; exec /usr/bin/firefox'
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # Pressing left will shrink the window’s width.
+        # Pressing right will grow the window’s width.
+        # Pressing up will shrink the window’s height.
+        # Pressing down will grow the window’s height.
+        bindsym j resize shrink width 10 px or 10 ppt
+        bindsym k resize grow height 10 px or 10 ppt
+        bindsym l resize shrink height 10 px or 10 ppt
+        bindsym semicolon resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# Start i3bar to display a workspace bar (plus the system information i3status
+# finds out, if available)
+bar {
+    font pango: DejaVu Sans Mono, FontAwesome 10
+	position top
+        status_command i3status
+    colors {
+        statusline #c8e8ff  
+        separator #ffac33
+        inactive_workspace #333333 #222222 #c8e8ff
+    }
+}
+
+set $Locker i3lock -i /home/bma/background.png -n && sleep 1
+
+set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
+mode "$mode_system" {
+    bindsym l exec --no-startup-id $Locker
+    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym s exec --no-startup-id $Locker && systemctl suspend, mode "default"
+    bindsym h exec --no-startup-id $Locker && systemctl hibernate, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"  
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Pause mode "$mode_system"
+
+#Screen lock
+bindsym $mod+l exec --no-startup-id $Locker, mode "default"
+exec --no-startup-id /usr/bin/xautolock -time 1 -secure -locker $locker -notify 30 -notifier "notify-send -u critical -t 10000 -- 'LOCKING screen in 30 seconds'"
+
+# set the background color
+#exec --no-startup-id xsetroot -solid "#333333"
+exec --no-startup-id feh --bg-scale /home/bma/background.png
+
+# lauch nm-applet manager (network)
+exec --no-startup-id nm-applet
+
+#Adds the second screen at LEXSI office
+exec --no-startup-id /usr/bin/xrandr --output VGA1 --auto --right-of LVDS1
+
+
+# enable sound control keys
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 -- +10% && killall -SIGUSR1 i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -- -10% && killall -SIGUSR1 i3status
+bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master Playback Switch toggle
+
+# Sreen brightness controls
+exec --no-startup-id /usr/bin/redshift
+
+bindsym XF86MonBrightnessUp exec xbacklight -inc 20 # increase screen brightness
+bindsym XF86MonBrightnessDown exec xbacklight -dec 20 # decrease screen brightness
+
+#Screen capture
+bindsym Print exec sleep 1 && scrot '/home/bma/captures/%Y-%m-%d-%H:%M:%S_capture.png' -s &&  eog /home/bma/captures/$(ls -t /home/bma/captures/ | head -1)
