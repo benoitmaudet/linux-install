@@ -36,13 +36,13 @@ function install_firefox {
 	sudo apt-get install -y firefox
 	#firebug
 	wget https://addons.mozilla.org/firefox/downloads/latest/firebug/addon-1843-latest.xpi
-	sudo firefox -install-global-extension addon-1843-latest.xpi
+	sudo firefox -install-global-extension addon-1843-latest.xpi &
 	#Adblock plus
 	wget https://addons.mozilla.org/firefox/downloads/latest/adblock-plus/addon-1865-latest.xpi
-	sudo firefox -install-global-extension addon-1865-latest.xpi
+	sudo firefox -install-global-extension addon-1865-latest.xpi &
 	#MM3-proxySwich
 	wget https://addons.mozilla.org/firefox/downloads/latest/mm3-proxyswitch/addon-2648-latest.xpi
-	sudo firefox -install-global-extension addon-2648-latest.xpi
+	sudo firefox -install-global-extension addon-2648-latest.xpi &
 }
 
 function install_desktop_home {
@@ -60,19 +60,19 @@ function install_desktop_home {
 }
 
 function install_git_projects {
-	git clone https://github.com/royhills/ike-scan.git -C /opt
-	git clone https://github.com/secforce/sparta.git -C /opt
-	git clone https://github.com/adaptivethreat/BloodHound.git -C /opt
-	git clone https://github.com/PowerShellMafia/PowerSploit.git -C /opt
-	git clone https://github.com/adaptivethreat/Empire.git -C /opt
-	git clone https://github.com/samratashok/nishang.git -C /opt
-	git clone https://github.com/sqlmapproject/sqlmap.git -C /opt
-	git clone https://github.com/wpscanteam/wpscan.git -C /opt
-	git clone https://github.com/maurosoria/dirsearch.git -C /opt
-	git clone https://github.com/SpiderLabs/Responder.git -C /opt
-	git clone git://git.kali.org/packages/fierce.git -C /opt
-	git clone https://github.com/derv82/wifite.git -C /opt
-	git clone https://github.com/robertdavidgraham/masscan.git -C /opt
+	sudo git -C /opt clone https://github.com/royhills/ike-scan.git
+	sudo git -C /opt clone https://github.com/secforce/sparta.git
+	sudo git -C /opt clone https://github.com/adaptivethreat/BloodHound.git
+	sudo git -C /opt clone https://github.com/PowerShellMafia/PowerSploit.git
+	sudo git -C /opt clone https://github.com/adaptivethreat/Empire.git
+	sudo git -C /opt clone https://github.com/samratashok/nishang.git
+	sudo git -C /opt clone https://github.com/sqlmapproject/sqlmap.git
+	sudo git -C /opt clone https://github.com/wpscanteam/wpscan.git
+	sudo git -C /opt clone https://github.com/maurosoria/dirsearch.git
+	sudo git -C /opt clone https://github.com/SpiderLabs/Responder.git
+	sudo git -C /opt clone git://git.kali.org/packages/fierce.git
+	sudo git -C /opt clone https://github.com/derv82/wifite.git
+	sudo git -C /opt clone https://github.com/robertdavidgraham/masscan.git
 }
 
 function install_metasploit {
@@ -114,11 +114,12 @@ function install_graphic_interface {
 	#fonts
 	sudo apt-get install -y fonts-font-awesome 
 	wget https://github.com/hbin/top-programming-fonts/raw/master/Menlo-Regular.ttf -P ~/.fonts/
+	fc-cache -f -v
 
 	#fish
 	sudo apt-get install -y fish
 	curl -L http://get.oh-my.fish | fish
-	omf install agnoster
+	omf install agnoster & exit
 
 	#Graphical system tools
 	sudo apt-get install -y nautilus scrot nm-applet
@@ -177,11 +178,18 @@ function configure_network {
 }
 
 function update_system {
-	sudo apt-get update
-	sudo apt-get upgrade
-	sudo apt-get dist-upgrade
-	sudo apt-get autoremove
-	sudo apt-get autoclean
+	sudo apt-get update -y 
+	sudo apt-get upgrade -y 
+	sudo apt-get dist-upgrade -y 
+	sudo apt-get autoremove -y 
+	sudo apt-get autoclean -y 
+}
+
+function set_permissions {	
+	#Home directory
+	sudo chown `whoami`:`whoami` -R /home/`whoami`
+	sudo chmod -R 600 /home/`whoami`
+	echo -e "\033[1;31mCheck /opt permissions\033[0m"
 }
 
 for i in "$@"
@@ -238,9 +246,11 @@ if [[ -z ${SERVER} ]]; then
 
 	install_git_projects
 
-	install_metasploit
+	#install_metasploit
 
-	sudo apt-get install -y wireless-tools
+	sudo apt-get install -y wireless-tools xbacklight alsa-utils pulseaudio-utils feh
+
+	#add startx at startup
 fi
 
 if [[ -z ${VIRTUAL} ]]; then
@@ -251,19 +261,23 @@ fi
 
 install_firewall
 
-sudo apt-get install -y ipcalc aha nmap openssl openjdk-8-jdk john aircrack-ng
+sudo apt-get install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng
 
 #Sudoers
 echo -e "\033[1;31m Configure Sudoers \033[0m"
 
 #chkrootkit, rkhunter, lynis
- sudo apt-get install rkhunter 
+ sudo apt-get install -y rkhunter 
  sudo rkhunter --update
- sudo apt-get install chkrootkit
- sudo apt-get install lynis
+ sudo apt-get install -y chkrootkit
+ sudo apt-get install -y lynis
  sudo lynis --check-update
 
 #Copy bashrc
 echo -e "\033[1;31m Copy .bashrc file \033[0m"
 
 update_system
+
+set_permissions
+
+#
