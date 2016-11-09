@@ -107,6 +107,10 @@ assign [class="sublime-text-2"] $tag9
 assign [class="Pidgin"] $tag6
 assign [class="VirtualBox"] $tag7
 assign [class="(?i)thunderbird"] $tag2
+assign [class="KeePass"] $tag5
+assign [class="Firefox"] $tag1
+assign [class="Terminator"] $tag3
+assign [class="Nautilus"] $tag10
 
 # switch to workspace
 bindsym $mod+1 workspace $tag1
@@ -205,7 +209,7 @@ bar {
     }
 }
 
-set $Locker i3lock -i /home/bma/background.png -n && sleep 1
+set $Locker i3lock -i /home/`whoami`/background.png -n && sleep 1
 
 set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
 mode "$mode_system" {
@@ -225,29 +229,44 @@ bindsym $mod+Pause mode "$mode_system"
 
 #Screen lock
 bindsym $mod+l exec --no-startup-id $Locker, mode "default"
-exec --no-startup-id /usr/bin/xautolock -time 1 -secure -locker $locker -notify 30 -notifier "notify-send -u critical -t 10000 -- 'LOCKING screen in 30 seconds'"
+#exec --no-startup-id /usr/bin/xautolock -time 1 -secure -locker $locker -notify 30 -notifier "notify-send -u critical -t 10000 -- 'LOCKING screen in 30 seconds'"
 
 # set the background color
 #exec --no-startup-id xsetroot -solid "#333333"
-exec --no-startup-id feh --bg-scale /home/bma/background.png
+exec --no-startup-id feh --bg-scale /home/`whoami`/background.png
 
+# Lauch applications on startup
 # lauch nm-applet manager (network)
 exec --no-startup-id nm-applet
+exec --no-startup-id i3-msg $tag1; exec /usr/bin/firefox
+exec --no-startup-id i3-msg $tag3; exec /usr/bin/terminator 
+exec --no-startup-id i3-msg $tag10; exec /usr/bin/nautilus
+exec --no-startup-id i3-msg $tag5; exec /usr/bin/keepass2 
+exec --no-startup-id i3-msg $tag7; exec /usr/bin/virtualbox
 
-#Adds the second screen at LEXSI office
+
+#Adds the vga/hdmi second screen
 exec --no-startup-id /usr/bin/xrandr --output VGA1 --auto --right-of LVDS1
+exec --no-startup-id /usr/bin/xrandr --output HDMI-0 --auto --right-of LVDS1
 
 
 # enable sound control keys
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 -- +10% && killall -SIGUSR1 i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -- -10% && killall -SIGUSR1 i3status
-bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master Playback Switch toggle
+#### For dell with 1 sound output
+#bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 -- +10% && killall -SIGUSR1 i3status
+#bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -- -10% && killall -SIGUSR1 i3status
+#bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master Playback Switch toggle
+
+#### For vaio with 2 sound output
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 1 +10% && killall -SIGUSR1 i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 1 -10% && killall -SIGUSR1 i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 1 toggle
+
 
 # Sreen brightness controls
-exec --no-startup-id /usr/bin/redshift
+exec --no-startup-id /usr/bin/redshift -m randr -b 0.8 -l 48.8:2.3 -v
 
 bindsym XF86MonBrightnessUp exec xbacklight -inc 20 # increase screen brightness
 bindsym XF86MonBrightnessDown exec xbacklight -dec 20 # decrease screen brightness
 
 #Screen capture
-bindsym Print exec sleep 1 && scrot '/home/bma/captures/%Y-%m-%d-%H:%M:%S_capture.png' -s &&  eog /home/bma/captures/$(ls -t /home/bma/captures/ | head -1)
+bindsym Print exec sleep 1 && scrot '/home/`whoami`/captures/%Y-%m-%d-%H:%M:%S_capture.png' -s &&  eog /home/`whoami`/captures/$(ls -t /home/`whoami`/captures/ | head -1)

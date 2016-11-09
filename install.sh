@@ -1,39 +1,42 @@
 #!/bin/bash
 function install_firewall {
-	sudo apt-get install -y ufw gufw
 
-	sudo ufw default deny incoming
-	sudo ufw default deny forwarding
-	sudo ufw default deny outgoing
+	#Flush all
+	sudo iptables -F INPUT
+	sudo iptables -F OUTPUT
+	sudo iptables -F FORWARD
+
+	#Default policy
+	sudo iptables -P INPUT DROP
+	sudo iptables -P OUTPUT DROP
+	sudo iptables -P FORWARD DROP
 
 	#MAIL IMAP
-	sudo ufw allow in 993/tcp
+	sudo iptables -A INPUT -p tcp --dport 993 -j ACCEPT
 	#HTTP, HTTPS
-	sudo ufw allow out 80/tcp
-	sudo ufw allow out 8080
-	sudo ufw allow out 443/tcp
+	sudo iptables -A OUTPUT -p tcp --dport 80
+	sudo iptables -A OUTPUT -p tcp --dport 8080
+	sudo iptables -A OUTPUT -p tcp --dport 443
 	#DNS/WHOIS
-	sudo ufw allow out 53
+	sudo iptables -A OUTPUT -p tcp --dport 53
 	#SAMBA
-	sudo ufw allow out 445
+	sudo iptables -A OUTPUT -p tcp --dport 445
 	#JABBER, XMPP
-	sudo ufw allow out 5222
-	sudo ufw allow out 8010
+	sudo iptables -A OUTPUT -p tcp --dport 5222
+	sudo iptables -A OUTPUT -p tcp --dport 8010
 	#FTP
-	sudo ufw allow out 21
+	sudo iptables -A OUTPUT -p tcp --dport 21
 	#SSH
-	sudo ufw allow out 22
+	sudo iptables -A OUTPUT -p tcp --dport 22
 	#RDP
-	sudo ufw allow out 3389/tcp
+	sudo iptables -A OUTPUT -p tcp --dport 3389
 	#MAIL SMTP, IMAP
-	sudo ufw allow out 587/tcp
-	sudo ufw allow out 993/tcp
-
-	sudo ufw enable
+	sudo iptables -A OUTPUT -p tcp --dport 587
+	sudo iptables -A OUTPUT -p tcp --dport 993
 }
 
 function install_firefox {
-	sudo apt-get install -y firefox
+	sudo apt-get install -y firefox >> install.log 2>&1
 	#firebug
 	wget https://addons.mozilla.org/firefox/downloads/latest/firebug/addon-1843-latest.xpi
 	sudo firefox -install-global-extension addon-1843-latest.xpi &
@@ -75,54 +78,58 @@ function install_git_projects {
 	sudo git -C /opt clone https://github.com/robertdavidgraham/masscan.git
 }
 
-function install_metasploit {
-	sudo apt-get install build-essential libreadline-dev libssl-dev libpq5 libpq-dev libreadline5 libsqlite3-dev libpcap-dev openjdk-7-jre git-core autoconf postgresql pgadmin3 curl zlib1g-dev libxml2-dev libxslt1-dev vncviewer libyaml-dev curl zlib1g-dev
-
-	curl -L https://get.rvm.io | bash -s stable
-	source ~/.rvm/scripts/rvm
-	echo "source ~/.rvm/scripts/rvm" >> ~/.bashrc
-	source ~/.bashrc
-	rvm install 2.1.9
-	rvm use 2.1.9 --default
-	ruby -v
-
-	sudo -su postgres
-	createuser msf -P -S -R -D
-	createdb -O msf msf
-	exit
-
-	cd /opt
-	sudo git clone https://github.com/rapid7/metasploit-framework.git
-	sudo chown -R `whoami` /opt/metasploit-framework
-	cd metasploit-framework
-	# If using RVM set the default gem set that is create when you navigate in to the folder
-	rvm --default use ruby-2.1.6@metasploit-framework
-	gem install bundler
-	bundle install
-}
-
 function install_graphic_interface {
 	#i3
-	sudo apt-get install -y i3 i3lock
-	sudo apt-get install -y xinit
-	#TODO: copy i3 conf
-	echo -e "\033[1;31mCopy i3 configuration files to home directory\033[0m"
+	sudo apt-get install -y i3 i3lock >> install.log 2>&1
+	sudo apt-get install -y xinit >> install.log 2>&1
+	#Copy config file
+	cp .i3/* ~/.i3/
 
 	#terminator
-	sudo apt-get install -y terminator
+	sudo apt-get install -y terminator >> install.log 2>&1
 	
 	#fonts
-	sudo apt-get install -y fonts-font-awesome 
+	sudo apt-get install -y fonts-font-awesome  >> install.log 2>&1
 	wget https://github.com/hbin/top-programming-fonts/raw/master/Menlo-Regular.ttf -P ~/.fonts/
 	fc-cache -f -v
 
 	#fish
-	sudo apt-get install -y fish
+	sudo apt-get install -y fish >> install.log 2>&1
 	curl -L http://get.oh-my.fish | fish
 	omf install agnoster & exit
 
+	#Set fish as default shell
+	sudo chsh `whoami` -s /usr/bin/fish 
+
 	#Graphical system tools
-	sudo apt-get install -y nautilus scrot nm-applet
+	sudo apt-get install -y nautilus scrot nm-applet gedit >> install.log 2>&1
+
+	#Install lightdm and gtk greeter
+	sudo apt-get install -y lightdm lightdm-gtk-greeter >> install.log 2>&1
+
+	sudo bash -c 'echo "background=/home/`whoami`/wallpapers/autumn_bench-HD.jpg" >> /etc/lightdm/lightdm-gtk-greeter.conf'
+	sudo bash -c 'echo "font-name=menlo" >> /etc/lightdm/lightdm-gtk-greeter.conf'
+
+	sudo bash -c 'echo "[SeatDefaults]" > /etc/lightdm/lightdm.conf.d/50-no-guest.conf'
+	sudo bash -c 'echo "allow-guest=false" >> /etc/lightdm/lightdm.conf.d/50-no-guest.conf'
+
+	#Set random wallpaper
+	cp wallpapers ~/wallpapers
+	bash -c 'crontab -l | { cat; echo "* * * * * feh --bg-scale --randomize /home/`whoami`/wallpapers/*"; } | crontab -'
+
+	#Install video/audio
+	sudo apt-get install -y vlc pulseaudio alsa-base alsa-oss >> install.log 2>&1
+	sudo usradd `whoami` audio
+
+	#Install notification manager
+	sudo apt-get remove -y --purge dunst >> install.log 2>&1
+	sudo apt-get install -y notify-osd >> install.log 2>&1
+
+}
+
+function install_network {
+	#Install wifi and gnome network manager
+	sudo apt-get install -y network-manager-gnome bcmwl-kernel-source >> install.log 2>&1
 }
 
 function configure_network {
@@ -178,11 +185,13 @@ function configure_network {
 }
 
 function update_system {
-	sudo apt-get update -y 
-	sudo apt-get upgrade -y 
-	sudo apt-get dist-upgrade -y 
-	sudo apt-get autoremove -y 
-	sudo apt-get autoclean -y 
+	echo -e "\033[0;32mUpdating the system...\033[0m"
+	sudo apt-get update -y >> install.log 2>&1
+	sudo apt-get upgrade -y >> install.log 2>&1
+	sudo apt-get dist-upgrade -y >> install.log 2>&1
+	sudo apt-get autoremove -y >> install.log 2>&1
+	sudo apt-get autoclean -y >> install.log 2>&1
+	echo -e "\033[0;32mSystem updated.\033[0m"
 }
 
 function set_permissions {	
@@ -221,7 +230,11 @@ if [[ ${HELP} ]]; then
     exit
 fi
 
+echo "Install started" > install.log
+
 update_system
+
+sudo apt-get install -y curl git-core htop strings >> install.log 2>&1
 
 if [[ -z ${SERVER} ]]; then
     echo -e "\033[0;33mNo [--server] specified. Desktop installation will be processed.\033[0m"
@@ -229,16 +242,13 @@ if [[ -z ${SERVER} ]]; then
     install_graphic_interface
 
     #Install graphical softwares
-    sudo apt-get install -y wireshark redshift sublime-text virtualbox pidgin
+    sudo apt-get install -y wireshark redshift virtualbox pidgin libreoffice >> install.log 2>&1
 
     #KeePass
-	sudo apt-get install -y keepass2 
+	sudo apt-get install -y keepass2 >> install.log 2>&1
 
 	#Sublime-text
 	echo -e "\033[1;31mTo install Sublime-text: firefox http://www.sublimetext.com/3\033[0m"
-
-	#Wallpaper: copy and set
-	echo -e "\033[1;31mCopy and set Wallpapers\033[0m"
 
 	install_firefox
 
@@ -246,38 +256,39 @@ if [[ -z ${SERVER} ]]; then
 
 	install_git_projects
 
-	#install_metasploit
+	chmod +x ./install_metasploit
+	#./install_metasploit &
 
-	sudo apt-get install -y wireless-tools xbacklight alsa-utils pulseaudio-utils feh
+	sudo apt-get install -y wireless-tools xbacklight alsa-utils pulseaudio-utils feh >> install.log 2>&1
 
-	#add startx at startup
 fi
 
 if [[ -z ${VIRTUAL} ]]; then
     echo -e "\033[0;33mNo [--virtual] specified. Package 'open-vm-tools' will not be installed.\033[0m"
 
-    sudo apt-get install -y open-vm-tools
+    sudo apt-get install -y open-vm-tools >> install.log 2>&1
 fi
 
 install_firewall
 
-sudo apt-get install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng
+sudo apt-get install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng >> install.log 2>&1
 
 #Sudoers
 echo -e "\033[1;31m Configure Sudoers \033[0m"
 
 #chkrootkit, rkhunter, lynis
- sudo apt-get install -y rkhunter 
+ sudo apt-get install -y rkhunter >> install.log 2>&1
  sudo rkhunter --update
- sudo apt-get install -y chkrootkit
- sudo apt-get install -y lynis
+ sudo apt-get install -y chkrootkit >> install.log 2>&1
+ sudo apt-get install -y lynis >> install.log 2>&1
  sudo lynis --check-update
 
-#Copy bashrc
-echo -e "\033[1;31m Copy .bashrc file \033[0m"
+#Copy bashrc(s)
+sudo cp .bashrc_root /root/.bashrc
+sudo cp .bashrc_user /home/`whoami`/.bashrc
 
 update_system
 
 set_permissions
 
-#
+echo "Install finished" >> install.log
