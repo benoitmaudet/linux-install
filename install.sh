@@ -101,6 +101,8 @@ function install_graphic_interface {
 	#Set fish as default shell
 	sudo chsh `whoami` -s /usr/bin/fish 
 
+	cp .config/fish/functions/nmap.fish /home/`whoami`/.config/fish/functions/
+
 	#Graphical system tools
 	sudo apt-get install -y nautilus scrot nm-applet gedit >> install.log 2>&1
 
