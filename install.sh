@@ -50,16 +50,16 @@ function install_firefox {
 
 function install_desktop_home {
 	#Home directories
-	mkdir ~/securityDB
-	mkdir ~/tools
-	mkdir ~/vm
-	mkdir ~/captures
-	mkdir ~/.i3/
-	mkdir ~/.config/
-	mkdir ~/.config/terminator/
+	mkdir /home/`whoami`/securityDB
+	mkdir /home/`whoami`/tools
+	mkdir /home/`whoami`/vm
+	mkdir /home/`whoami`/captures
+	mkdir /home/`whoami`/.i3/
+	mkdir /home/`whoami`/.config/
+	mkdir /home/`whoami`/.config/terminator/
 
 	#Configs
-	cp .config/terminator/config ~/.config/terminator/config
+	cp .config/terminator/config /home/`whoami`/.config/terminator/config
 }
 
 function install_git_projects {
@@ -116,7 +116,7 @@ function install_graphic_interface {
 	sudo bash -c 'echo "allow-guest=false" >> /etc/lightdm/lightdm.conf.d/50-no-guest.conf'
 
 	#Set random wallpaper
-	cp wallpapers ~/wallpapers
+	cp wallpapers /home/`whoami`/wallpapers
 	bash -c 'crontab -l | { cat; echo "* * * * * feh --bg-scale --randomize /home/`whoami`/wallpapers/*"; } | crontab -'
 
 	#Install video/audio
@@ -241,6 +241,8 @@ sudo apt-get install -y curl git-core htop strings >> install.log 2>&1
 if [[ -z ${SERVER} ]]; then
     echo -e "\033[0;33mNo [--server] specified. Desktop installation will be processed.\033[0m"
 
+    install_desktop_home
+
     install_graphic_interface
 
     #Install graphical softwares
@@ -253,8 +255,6 @@ if [[ -z ${SERVER} ]]; then
 	echo -e "\033[1;31mTo install Sublime-text: firefox http://www.sublimetext.com/3\033[0m"
 
 	install_firefox
-
-	install_desktop_home
 
 	install_git_projects
 
