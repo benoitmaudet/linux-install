@@ -121,7 +121,7 @@ function install_graphic_interface {
 
 	#Install video/audio
 	sudo apt-get install -y vlc pulseaudio alsa-base alsa-oss >> install.log 2>&1
-	sudo usradd `whoami` audio
+	sudo useradd `whoami` audio
 
 	#Install notification manager
 	sudo apt-get remove -y --purge dunst >> install.log 2>&1
