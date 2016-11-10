@@ -96,7 +96,7 @@ function install_graphic_interface {
 	#fish
 	sudo apt-get install -y fish >> install.log 2>&1
 	curl -L http://get.oh-my.fish | fish
-	omf install agnoster & exit
+	fish -c "omf install agnoster & exit"
 
 	#Set fish as default shell
 	sudo chsh `whoami` -s /usr/bin/fish 
