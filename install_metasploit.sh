@@ -3,7 +3,7 @@ function install_metasploit {
 
 	sudo apt-get -y install postgresql >> install.log 2>&1
 
-        command curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
+    command curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
 
 	curl -L https://get.rvm.io | bash -s stable
 	source ~/.rvm/scripts/rvm

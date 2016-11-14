@@ -127,6 +127,8 @@ function install_graphic_interface {
 	sudo apt-get remove -y --purge dunst >> install.log 2>&1
 	sudo apt-get install -y notify-osd >> install.log 2>&1
 
+	#Install image viewer
+	sudo apt-get install -y eog >> install.log 2>&1
 }
 
 function install_network {
@@ -203,6 +205,35 @@ function set_permissions {
 	echo -e "\033[1;31mCheck /opt permissions\033[0m"
 }
 
+function clean_groups_and_users {
+	#Remove useless groups
+	sudo groupdel backup
+	sudo groupdel irc
+	sudo groupdel operator
+	sudo groupdel gnats
+	sudo groupdel staff
+	sudo groupdel uucp
+	sudo groupdel lp
+	sudo groupdel users
+	sudo groupdel news
+	sudo groupdel src
+	sudo groupdel list
+	sudo groupdel games
+	sudo groupdel www-data
+	sudo groupdel proxy
+	
+	#Remove useless users
+	sudo userdel sync
+	sudo userdel gnats
+	sudo userdel uucp
+	sudo userdel lp
+	sudo userdel irc
+	sudo userdel proxy
+	sudo userdel news
+	sudo userdel list
+	sudo userdel games
+}
+
 for i in "$@"
 do
 case $i in
@@ -234,7 +265,17 @@ fi
 
 echo "Install started" > install.log
 
+#Checks if Ubuntu is OS
+OS_NAME=`gawk -F= '/^NAME/{print $2}' /etc/os-release |tr -d '"'`
+if [ "$OS_NAME" != "Ubuntu" ];
+then
+	echo "OS: $OS_NAME not compatible"
+    exit
+fi
+
 update_system
+
+clean_groups_and_users
 
 sudo apt-get install -y curl git-core htop strings >> install.log 2>&1
 
@@ -274,6 +315,8 @@ fi
 install_firewall
 
 sudo apt-get install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng >> install.log 2>&1
+
+./install_crackmapexec.sh
 
 #Sudoers
 echo -e "\033[1;31m Configure Sudoers \033[0m"
