@@ -202,7 +202,10 @@ function set_permissions {
 	#Home directory
 	sudo chown `whoami`:`whoami` -R /home/`whoami`
 	sudo chmod -R 600 /home/`whoami`
-	echo -e "\033[1;31mCheck /opt permissions\033[0m"
+
+	sudo chown root:root -R /opt
+	sudo chmod -R og-w /opt 
+
 }
 
 function clean_groups_and_users {
