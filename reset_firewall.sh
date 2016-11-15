@@ -1,3 +1,4 @@
+#!/bin/bash
 function reset_firewall {
 
 	#Flush all

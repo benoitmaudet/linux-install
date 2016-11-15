@@ -1,42 +1,15 @@
 #!/bin/bash
-function install_firewall {
-
-	#Flush all
-	sudo iptables -F INPUT
-	sudo iptables -F OUTPUT
-	sudo iptables -F FORWARD
-
-	#Default policy
-	sudo iptables -P INPUT DROP
-	sudo iptables -P OUTPUT DROP
-	sudo iptables -P FORWARD DROP
-
-	#MAIL IMAP
-	sudo iptables -A INPUT -p tcp --dport 993 -j ACCEPT
-	#HTTP, HTTPS
-	sudo iptables -A OUTPUT -p tcp --dport 80
-	sudo iptables -A OUTPUT -p tcp --dport 8080
-	sudo iptables -A OUTPUT -p tcp --dport 443
-	#DNS/WHOIS
-	sudo iptables -A OUTPUT -p tcp --dport 53
-	#SAMBA
-	sudo iptables -A OUTPUT -p tcp --dport 445
-	#JABBER, XMPP
-	sudo iptables -A OUTPUT -p tcp --dport 5222
-	sudo iptables -A OUTPUT -p tcp --dport 8010
-	#FTP
-	sudo iptables -A OUTPUT -p tcp --dport 21
-	#SSH
-	sudo iptables -A OUTPUT -p tcp --dport 22
-	#RDP
-	sudo iptables -A OUTPUT -p tcp --dport 3389
-	#MAIL SMTP, IMAP
-	sudo iptables -A OUTPUT -p tcp --dport 587
-	sudo iptables -A OUTPUT -p tcp --dport 993
+function check_internet {
+	echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		echo -e '\033[0;32m[OK] You are online\033[0m'
+	else
+		echo -e '\033[0;33m[KO] You seem offline, please check your internet connection\033[0m' && sleep 4
+	fi
 }
 
 function install_firefox {
-	sudo apt-get install -y firefox >> install.log 2>&1
+	sudo apt install -y firefox >> install.log 2>&1
 	#firebug
 	wget https://addons.mozilla.org/firefox/downloads/latest/firebug/addon-1843-latest.xpi
 	sudo firefox -install-global-extension addon-1843-latest.xpi &
@@ -62,6 +35,14 @@ function install_desktop_home {
 	cp .config/terminator/config /home/`whoami`/.config/terminator/config
 }
 
+function configure_sudoers {
+	sudo echo -e "\n# Added by linux-install script" | sudo EDITOR="tee -a" visudo
+	#Allow user to update and shutdown
+	sudo echo "`whoami` ALL=/usr/bin/apt,/sbin/shutdown" | sudo EDITOR="tee -a" visudo
+	#Reset environement on sudo and set timeout to 10 min
+	sudo echo "Defaults env_reset,timestamp_timeout=10" | sudo EDITOR="tee -a" visudo
+}
+
 function install_git_projects {
 	sudo git -C /opt clone https://github.com/royhills/ike-scan.git
 	sudo git -C /opt clone https://github.com/secforce/sparta.git
@@ -80,21 +61,21 @@ function install_git_projects {
 
 function install_graphic_interface {
 	#i3
-	sudo apt-get install -y i3 i3lock >> install.log 2>&1
-	sudo apt-get install -y xinit >> install.log 2>&1
+	sudo apt install -y i3 i3lock >> install.log 2>&1
+	sudo apt install -y xinit >> install.log 2>&1
 	#Copy config file
 	cp .i3/* ~/.i3/
 
 	#terminator
-	sudo apt-get install -y terminator >> install.log 2>&1
+	sudo apt install -y terminator >> install.log 2>&1
 	
 	#fonts
-	sudo apt-get install -y fonts-font-awesome  >> install.log 2>&1
+	sudo apt install -y fonts-font-awesome  >> install.log 2>&1
 	wget https://github.com/hbin/top-programming-fonts/raw/master/Menlo-Regular.ttf -P ~/.fonts/
 	fc-cache -f -v
 
 	#fish
-	sudo apt-get install -y fish >> install.log 2>&1
+	sudo apt install -y fish >> install.log 2>&1
 	curl -L http://get.oh-my.fish | fish
 	fish -c "omf install agnoster & exit"
 
@@ -104,10 +85,10 @@ function install_graphic_interface {
 	cp .config/fish/functions/nmap.fish /home/`whoami`/.config/fish/functions/
 
 	#Graphical system tools
-	sudo apt-get install -y nautilus scrot nm-applet gedit >> install.log 2>&1
+	sudo apt install -y nautilus scrot nm-applet gedit >> install.log 2>&1
 
 	#Install lightdm and gtk greeter
-	sudo apt-get install -y lightdm lightdm-gtk-greeter >> install.log 2>&1
+	sudo apt install -y lightdm lightdm-gtk-greeter >> install.log 2>&1
 
 	sudo bash -c 'echo "background=/home/`whoami`/wallpapers/autumn_bench-HD.jpg" >> /etc/lightdm/lightdm-gtk-greeter.conf'
 	sudo bash -c 'echo "font-name=menlo" >> /etc/lightdm/lightdm-gtk-greeter.conf'
@@ -120,20 +101,20 @@ function install_graphic_interface {
 	bash -c 'crontab -l | { cat; echo "* * * * * feh --bg-scale --randomize /home/`whoami`/wallpapers/*"; } | crontab -'
 
 	#Install video/audio
-	sudo apt-get install -y vlc pulseaudio alsa-base alsa-oss >> install.log 2>&1
+	sudo apt install -y vlc pulseaudio alsa-base alsa-oss >> install.log 2>&1
 	sudo useradd `whoami` audio
 
 	#Install notification manager
-	sudo apt-get remove -y --purge dunst >> install.log 2>&1
-	sudo apt-get install -y notify-osd >> install.log 2>&1
+	sudo apt remove -y --purge dunst >> install.log 2>&1
+	sudo apt install -y notify-osd >> install.log 2>&1
 
 	#Install image viewer
-	sudo apt-get install -y eog >> install.log 2>&1
+	sudo apt install -y eog >> install.log 2>&1
 }
 
 function install_network {
 	#Install wifi and gnome network manager
-	sudo apt-get install -y network-manager-gnome bcmwl-kernel-source >> install.log 2>&1
+	sudo apt install -y network-manager-gnome bcmwl-kernel-source >> install.log 2>&1
 }
 
 function configure_network {
@@ -188,24 +169,48 @@ function configure_network {
 	sudo echo "nospoof on" >> /etc/host.conf
 }
 
-function update_system {
-	echo -e "\033[0;32mUpdating the system...\033[0m"
-	sudo apt-get update -y >> install.log 2>&1
-	sudo apt-get upgrade -y >> install.log 2>&1
-	sudo apt-get dist-upgrade -y >> install.log 2>&1
-	sudo apt-get autoremove -y >> install.log 2>&1
-	sudo apt-get autoclean -y >> install.log 2>&1
-	echo -e "\033[0;32mSystem updated.\033[0m"
-}
-
 function set_permissions {	
 	#Home directory
 	sudo chown `whoami`:`whoami` -R /home/`whoami`
 	sudo chmod -R 600 /home/`whoami`
 
 	sudo chown root:root -R /opt
-	sudo chmod -R og-w /opt 
+	sudo chmod -R og-w /opt
 
+	sudo chown root:root -R /root
+	sudo chmod -R og-rwx /root 
+}
+
+function set_cron {
+	sudo mkdir /root/scripts
+
+	echo "# mm hh dd MMM DDD task > log" > crontab.tmp
+	echo "# 	mm represents minutes (0-59)" >> crontab.tmp
+	echo "# 	hh represents the hour (0-23)" >> crontab.tmp
+	echo "# 	dd represents the day number of month (1-31)" >> crontab.tmp
+	echo "# 	MMM represents the month number (1 to 12) or the abbreviated month name (jan, feb, mar, apr, ...)" >> crontab.tmp
+	echo "# 	DDD is the abbreviated name of day or the number corresponding to the day of the week (0 is Sunday, 1 represents Monday, ...)" >> crontab.tmp
+	echo "# 	task represents the command or shell script to run" >> crontab.tmp
+	echo "# 	log is the name of a file in which to store the log of operations. If the clause >log is not specified, cron will automatically send a confirmation email. To avoid this, simply specify ">/dev/null""  >> crontab.tmp
+	echo "" >> crontab.tmp
+
+	echo "@reboot bash /root/scripts/update_system.sh" >> crontab.tmp
+	echo "@reboot bash /root/scripts/reset_firewall.sh" >> crontab.tmp
+	echo "@reboot bash /root/scripts/reset_permissions.sh" >> crontab.tmp	
+	echo "@reboot bash chown `whoami`:`whoami` -R /home/`whoami`" >> crontab.tmp
+
+	sudo cp ./update_system.sh /root/scripts/
+	sudo chmod ugo+x /root/scripts/update_system.sh
+
+	sudo cp ./reset_firewall.sh /root/scripts/
+	sudo chmod ugo+x /root/scripts/reset_firewall.
+
+	sudo cp ./reset_permissions.sh /root/scripts/
+	sudo chmod ugo+x /root/scripts/reset_permissions.sh
+
+	#install new cron file
+	sudo crontab crontab.tmp
+	rm crontab.tmp
 }
 
 function clean_groups_and_users {
@@ -246,9 +251,6 @@ case $i in
     --server)
     SERVER=YES
     ;;
-    --virtual)
-    VIRTUAL=YES
-    ;;
     --help)
     HELP=YES
     ;;
@@ -259,9 +261,8 @@ if [[ ${HELP} ]]; then
     echo -e ""
     echo -e "\033[0;32mThis script automaticatlly install your new Ubuntu environment\033[0m"
     echo -e ""
-    echo "Usage : ./install.sh [--help] [--server] [--virtual]"
+    echo "Usage : ./install.sh [--help] [--server]"
     echo -e "\t --server\t server install mode (without graphical interfaces)"
-    echo -e "\t --virtual\t install 'open-vm-tools' package"
     echo -e "\t --help \t display this help"
     exit
 fi
@@ -276,11 +277,13 @@ then
     exit
 fi
 
-update_system
+check_internet
+
+./update_system.sh
 
 clean_groups_and_users
 
-sudo apt-get install -y curl git-core htop strings >> install.log 2>&1
+sudo apt install -y curl git-core htop strings >> install.log 2>&1
 
 if [[ -z ${SERVER} ]]; then
     echo -e "\033[0;33mNo [--server] specified. Desktop installation will be processed.\033[0m"
@@ -290,53 +293,59 @@ if [[ -z ${SERVER} ]]; then
     install_graphic_interface
 
     #Install graphical softwares
-    sudo apt-get install -y wireshark redshift virtualbox pidgin libreoffice >> install.log 2>&1
+    sudo apt install -y wireshark redshift virtualbox pidgin libreoffice >> install.log 2>&1
 
     #KeePass
-	sudo apt-get install -y keepass2 >> install.log 2>&1
+	sudo apt install -y keepass2 >> install.log 2>&1
 
 	#Sublime-text
 	echo -e "\033[1;31mTo install Sublime-text: firefox http://www.sublimetext.com/3\033[0m"
 
 	install_firefox
 
-	install_git_projects
-
-	chmod +x ./install_metasploit
-	#./install_metasploit &
-
-	sudo apt-get install -y wireless-tools xbacklight alsa-utils pulseaudio-utils feh >> install.log 2>&1
+	sudo apt install -y wireless-tools xbacklight alsa-utils pulseaudio-utils feh >> install.log 2>&1
 
 fi
 
-if [[ -z ${VIRTUAL} ]]; then
-    echo -e "\033[0;33mNo [--virtual] specified. Package 'open-vm-tools' will not be installed.\033[0m"
-
-    sudo apt-get install -y open-vm-tools >> install.log 2>&1
+#Detects virtual machine
+if grep -iEq "^flags.*hypervior" /proc/cpuinfo ; then
+	echo -e "\033[0;33mVirtual machine detected. Package 'open-vm-tools' will be installed.\033[0m"
+    sudo apt install -y open-vm-tools >> install.log 2>&1
 fi
 
-install_firewall
+chmod +x ./reset_firewall.sh
+./reset_firewall.sh
 
-sudo apt-get install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng >> install.log 2>&1
+sudo apt install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng >> install.log 2>&1
 
-./install_crackmapexec.sh
+chmod +x ./install_metasploit.sh
+./install_metasploit.sh &
 
-#Sudoers
-echo -e "\033[1;31m Configure Sudoers \033[0m"
+chmod +x ./install_crackmapexec.sh
+./install_crackmapexec.sh &
+
+install_git_projects
 
 #chkrootkit, rkhunter, lynis
- sudo apt-get install -y rkhunter >> install.log 2>&1
+ sudo apt install -y rkhunter >> install.log 2>&1
  sudo rkhunter --update
- sudo apt-get install -y chkrootkit >> install.log 2>&1
- sudo apt-get install -y lynis >> install.log 2>&1
+ sudo apt install -y chkrootkit >> install.log 2>&1
+ sudo apt install -y lynis >> install.log 2>&1
  sudo lynis --check-update
 
 #Copy bashrc(s)
 sudo cp .bashrc_root /root/.bashrc
 sudo cp .bashrc_user /home/`whoami`/.bashrc
 
-update_system
+#Set hostname
+sudo hostname `whoami`-pc
+
+./update_system.sh
+
+set_cron
 
 set_permissions
+
+configure_sudoers
 
 echo "Install finished" >> install.log
