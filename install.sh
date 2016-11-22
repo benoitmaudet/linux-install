@@ -114,7 +114,7 @@ function install_graphic_interface {
 
 function install_network {
 	#Install wifi and gnome network manager
-	sudo apt install -y network-manager-gnome bcmwl-kernel-source >> install.log 2>&1
+	sudo apt install -y wpasupplicant network-manager-gnome bcmwl-kernel-source >> install.log 2>&1
 }
 
 function configure_network {
@@ -283,7 +283,7 @@ check_internet
 
 clean_groups_and_users
 
-sudo apt install -y curl git-core htop strings >> install.log 2>&1
+sudo apt install -y hwinfo curl git-core htop strings >> install.log 2>&1
 
 if [[ -z ${SERVER} ]]; then
     echo -e "\033[0;33mNo [--server] specified. Desktop installation will be processed.\033[0m"
