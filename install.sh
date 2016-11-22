@@ -11,14 +11,16 @@ function check_internet {
 function install_firefox {
 	sudo apt install -y firefox >> install.log 2>&1
 	#firebug
-	wget https://addons.mozilla.org/firefox/downloads/latest/firebug/addon-1843-latest.xpi
-	sudo firefox -install-global-extension addon-1843-latest.xpi &
+	wget https://addons.mozilla.org/firefox/downloads/latest/firebug/addon-1843-latest.xpi >> install.log 2>&1
+	sudo firefox -install-global-extension addon-1843-latest.xpi >> install.log 2>&1 &
 	#Adblock plus
-	wget https://addons.mozilla.org/firefox/downloads/latest/adblock-plus/addon-1865-latest.xpi
-	sudo firefox -install-global-extension addon-1865-latest.xpi &
+	wget https://addons.mozilla.org/firefox/downloads/latest/adblock-plus/addon-1865-latest.xpi >> install.log 2>&1
+	sudo firefox -install-global-extension addon-1865-latest.xpi >> install.log 2>&1 &
 	#MM3-proxySwich
-	wget https://addons.mozilla.org/firefox/downloads/latest/mm3-proxyswitch/addon-2648-latest.xpi
-	sudo firefox -install-global-extension addon-2648-latest.xpi &
+	wget https://addons.mozilla.org/firefox/downloads/latest/mm3-proxyswitch/addon-2648-latest.xpi >> install.log 2>&1
+	sudo firefox -install-global-extension addon-2648-latest.xpi >> install.log 2>&1 &
+
+	sudo rm addon-*.xpi
 }
 
 function install_desktop_home {
@@ -44,19 +46,19 @@ function configure_sudoers {
 }
 
 function install_git_projects {
-	sudo git -C /opt clone https://github.com/royhills/ike-scan.git
-	sudo git -C /opt clone https://github.com/secforce/sparta.git
-	sudo git -C /opt clone https://github.com/adaptivethreat/BloodHound.git
-	sudo git -C /opt clone https://github.com/PowerShellMafia/PowerSploit.git
-	sudo git -C /opt clone https://github.com/adaptivethreat/Empire.git
-	sudo git -C /opt clone https://github.com/samratashok/nishang.git
-	sudo git -C /opt clone https://github.com/sqlmapproject/sqlmap.git
-	sudo git -C /opt clone https://github.com/wpscanteam/wpscan.git
-	sudo git -C /opt clone https://github.com/maurosoria/dirsearch.git
-	sudo git -C /opt clone https://github.com/SpiderLabs/Responder.git
-	sudo git -C /opt clone git://git.kali.org/packages/fierce.git
-	sudo git -C /opt clone https://github.com/derv82/wifite.git
-	sudo git -C /opt clone https://github.com/robertdavidgraham/masscan.git
+	sudo git -C /opt clone https://github.com/royhills/ike-scan.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/secforce/sparta.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/adaptivethreat/BloodHound.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/PowerShellMafia/PowerSploit.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/adaptivethreat/Empire.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/samratashok/nishang.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/sqlmapproject/sqlmap.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/wpscanteam/wpscan.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/maurosoria/dirsearch.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/SpiderLabs/Responder.git >> install.log 2>&1 &
+	sudo git -C /opt clone git://git.kali.org/packages/fierce.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/derv82/wifite.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/robertdavidgraham/masscan.git >> install.log 2>&1 &
 }
 
 function install_graphic_interface {
@@ -71,8 +73,9 @@ function install_graphic_interface {
 	
 	#fonts
 	sudo apt install -y fonts-font-awesome  >> install.log 2>&1
-	wget https://github.com/hbin/top-programming-fonts/raw/master/Menlo-Regular.ttf -P ~/.fonts/
-	fc-cache -f -v
+	wget https://github.com/hbin/top-programming-fonts/raw/master/Menlo-Regular.ttf -P ~/.fonts/  >> install.log 2>&1
+	cp fonts/* /home/`whoami`/.fonts/
+	fc-cache -f -v >> install.log 2>&1
 
 	#fish
 	sudo apt install -y fish >> install.log 2>&1
@@ -97,12 +100,12 @@ function install_graphic_interface {
 	sudo bash -c 'echo "allow-guest=false" >> /etc/lightdm/lightdm.conf.d/50-no-guest.conf'
 
 	#Set random wallpaper
-	cp wallpapers /home/`whoami`/wallpapers
-	bash -c 'crontab -l | { cat; echo "* * * * * feh --bg-scale --randomize /home/`whoami`/wallpapers/*"; } | crontab -'
+	cp -R wallpapers /home/`whoami`/wallpapers
+	bash -c "crontab -l | { cat; echo \"* * * * * feh --bg-scale --randomize /home/`whoami`/wallpapers/*\"; } | crontab -"
 
 	#Install video/audio
-	sudo apt install -y vlc pulseaudio alsa-base alsa-oss >> install.log 2>&1
-	sudo useradd `whoami` audio
+	sudo apt install -y vlc alsa-utils pulseaudio-utils pulseaudio alsa-base alsa-oss >> install.log 2>&1
+	sudo usermod -a -G audio `whoami` 
 
 	#Install notification manager
 	sudo apt remove -y --purge dunst >> install.log 2>&1
@@ -114,7 +117,7 @@ function install_graphic_interface {
 
 function install_network {
 	#Install wifi and gnome network manager
-	sudo apt install -y wpasupplicant network-manager-gnome bcmwl-kernel-source >> install.log 2>&1
+	sudo apt install -y wpasupplicant wireless-tools network-manager-gnome bcmwl-kernel-source >> install.log 2>&1
 }
 
 function configure_network {
@@ -173,6 +176,7 @@ function set_permissions {
 	#Home directory
 	sudo chown `whoami`:`whoami` -R /home/`whoami`
 	sudo chmod -R 600 /home/`whoami`
+	sudo find /home/`whoami` -type d -exec chmod u+x {} \; >> install.log 2>&1
 
 	sudo chown root:root -R /opt
 	sudo chmod -R og-w /opt
@@ -203,7 +207,7 @@ function set_cron {
 	sudo chmod ugo+x /root/scripts/update_system.sh
 
 	sudo cp ./reset_firewall.sh /root/scripts/
-	sudo chmod ugo+x /root/scripts/reset_firewall.
+	sudo chmod ugo+x /root/scripts/reset_firewall.sh
 
 	sudo cp ./reset_permissions.sh /root/scripts/
 	sudo chmod ugo+x /root/scripts/reset_permissions.sh
@@ -214,6 +218,19 @@ function set_cron {
 }
 
 function clean_groups_and_users {
+	
+	#Remove useless users
+	sudo userdel backup	
+	sudo userdel sync
+	sudo userdel gnats
+	sudo userdel uucp
+	sudo userdel lp
+	sudo userdel irc
+	sudo userdel proxy
+	sudo userdel news
+	sudo userdel list
+	sudo userdel games
+	
 	#Remove useless groups
 	sudo groupdel backup
 	sudo groupdel irc
@@ -228,18 +245,7 @@ function clean_groups_and_users {
 	sudo groupdel list
 	sudo groupdel games
 	sudo groupdel www-data
-	sudo groupdel proxy
-	
-	#Remove useless users
-	sudo userdel sync
-	sudo userdel gnats
-	sudo userdel uucp
-	sudo userdel lp
-	sudo userdel irc
-	sudo userdel proxy
-	sudo userdel news
-	sudo userdel list
-	sudo userdel games
+	sudo groupdel proxy	
 }
 
 for i in "$@"
@@ -303,7 +309,7 @@ if [[ -z ${SERVER} ]]; then
 
 	install_firefox
 
-	sudo apt install -y wireless-tools xbacklight alsa-utils pulseaudio-utils feh >> install.log 2>&1
+	sudo apt install -y xbacklight feh >> install.log 2>&1
 
 fi
 
@@ -318,11 +324,17 @@ chmod +x ./reset_firewall.sh
 
 sudo apt install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng >> install.log 2>&1
 
+install_network
+
+#Copy bashrc(s)
+sudo cp .bashrc_root /root/.bashrc
+sudo cp .bashrc_user /home/`whoami`/.bashrc
+
 chmod +x ./install_metasploit.sh
-./install_metasploit.sh &
+./install_metasploit.sh
 
 chmod +x ./install_crackmapexec.sh
-./install_crackmapexec.sh &
+./install_crackmapexec.sh
 
 install_git_projects
 
@@ -333,10 +345,6 @@ install_git_projects
  sudo apt install -y lynis >> install.log 2>&1
  sudo lynis --check-update
 
-#Copy bashrc(s)
-sudo cp .bashrc_root /root/.bashrc
-sudo cp .bashrc_user /home/`whoami`/.bashrc
-
 #Set hostname
 sudo hostname `whoami`-pc
 
@@ -344,8 +352,8 @@ sudo hostname `whoami`-pc
 
 set_cron
 
-set_permissions
-
 configure_sudoers
+
+set_permissions
 
 echo "Install finished" >> install.log
