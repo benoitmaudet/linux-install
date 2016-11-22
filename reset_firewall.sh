@@ -11,6 +11,10 @@ function reset_firewall {
 	sudo iptables -P OUTPUT DROP
 	sudo iptables -P FORWARD DROP
 
+	#Deluge web client and torrent
+	#sudo iptables -A INPUT -p tcp --dport 9092 -j ACCEPT
+	#sudo iptables -A OUTPUT -p tcp --dport 9093
+
 	#MAIL IMAP
 	sudo iptables -A INPUT -p tcp --dport 993 -j ACCEPT
 	#HTTP, HTTPS
