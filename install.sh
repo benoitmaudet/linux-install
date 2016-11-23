@@ -101,11 +101,12 @@ function install_graphic_interface {
 
 	#Set random wallpaper
 	cp -R wallpapers /home/`whoami`/wallpapers
-	bash -c "crontab -l | { cat; echo \"* * * * * feh --bg-scale --randomize /home/`whoami`/wallpapers/*\"; } | crontab -"
+	feh --bg-scale --randomize /home/benoit/wallpapers/*
+	bash -c "crontab -l | { cat; echo \"* * * * * DISPLAY=:0 feh --bg-scale --randomize /home/`whoami`/wallpapers/*\"; } | crontab -"
 
 	#Install video/audio
 	sudo apt install -y vlc alsa-utils pulseaudio-utils pulseaudio alsa-base alsa-oss >> install.log 2>&1
-	sudo usermod -a -G audio `whoami` 
+	sudo usermod -a -G audio `whoami`
 
 	#Install notification manager
 	sudo apt remove -y --purge dunst >> install.log 2>&1
@@ -322,7 +323,7 @@ fi
 chmod +x ./reset_firewall.sh
 ./reset_firewall.sh
 
-sudo apt install -y ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng >> install.log 2>&1
+sudo apt install -y python-pip ipcalc aha htop nmap openssl openjdk-8-jdk john aircrack-ng >> install.log 2>&1
 
 install_network
 

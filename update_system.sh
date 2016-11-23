@@ -6,6 +6,7 @@ function update_system {
 	sudo apt dist-upgrade -y > /dev/null 2>&1
 	sudo apt autoremove -y > /dev/null 2>&1
 	sudo apt autoclean -y > /dev/null 2>&1
+	pip install --upgrade pip > /dev/null 2>&1
 	echo -e "\033[0;32mSystem updated.\033[0m"
 }
 
