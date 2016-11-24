@@ -1,0 +1,1 @@
+set -gx PATH /opt/metasploit-framework/ /home/benoit/bin /home/benoit/.local/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/games /usr/local/games /snap/bin /home/benoit/.rvm/bin

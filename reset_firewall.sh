@@ -14,7 +14,7 @@ function reset_firewall {
 	#Allow ping
 	sudo iptables -A INPUT -p icmp -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
 	sudo iptables -A OUTPUT -p icmp -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
-	
+
 	#Allow established
 	sudo iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
@@ -24,7 +24,9 @@ function reset_firewall {
 
 	#MAIL IMAP
 	sudo iptables -A INPUT -m state --state NEW,ESTABLISHED -p tcp --dport 993 -j ACCEPT
-	#HTTP, HTTPS
+	sudo iptables -A INPUT -j LOG --log-prefix "INPUT:DROP:" --log-level 6
+
+#HTTP, HTTPS
 	sudo iptables -A OUTPUT -m state --state NEW,ESTABLISHED -p tcp --dport 80 -j ACCEPT
 	sudo iptables -A OUTPUT -m state --state NEW,ESTABLISHED -p tcp --dport 8080 -j ACCEPT
 	sudo iptables -A OUTPUT -m state --state NEW,ESTABLISHED -p tcp --dport 443 -j ACCEPT
@@ -46,6 +48,7 @@ function reset_firewall {
 	#MAIL SMTP, IMAP
 	sudo iptables -A OUTPUT -m state --state NEW,ESTABLISHED -p tcp --dport 587 -j ACCEPT
 	sudo iptables -A OUTPUT -m state --state NEW,ESTABLISHED -p tcp --dport 993 -j ACCEPT
+	sudo iptables -A OUTPUT -j LOG --log-prefix "OUTPUT:DROP:" --log-level 6
 }
 
 reset_firewall

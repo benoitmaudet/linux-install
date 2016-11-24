@@ -199,9 +199,13 @@ function set_cron {
 	echo "# 	log is the name of a file in which to store the log of operations. If the clause >log is not specified, cron will automatically send a confirmation email. To avoid this, simply specify ">/dev/null""  >> crontab.tmp
 	echo "" >> crontab.tmp
 
+	echo "#Update every hour" >> crontab.tmp
+	echo "0 * * * * * bash /root/scripts/update_system.sh" >> crontab.tmp
+        echo "" >> crontab.tmp
+
 	echo "@reboot bash /root/scripts/update_system.sh" >> crontab.tmp
 	echo "@reboot bash /root/scripts/reset_firewall.sh" >> crontab.tmp
-	echo "@reboot bash /root/scripts/reset_permissions.sh" >> crontab.tmp	
+	echo "@reboot bash /root/scripts/reset_permissions.sh" >> crontab.tmp
 	echo "@reboot bash chown `whoami`:`whoami` -R /home/`whoami`" >> crontab.tmp
 
 	sudo cp ./update_system.sh /root/scripts/
