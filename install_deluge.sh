@@ -1,7 +1,7 @@
 #/bin/bash
 
 function install_deluged {
-	sudo apt install -y deluge deluge-webui
+	sudo apt install -y deluged deluge-webui deluge-console
 
 	#Creates deluge service user
 	sudo adduser --system --gecos "Deluge Service" --disabled-password --group --home /var/lib/deluge deluge
@@ -28,7 +28,7 @@ function install_deluged {
 	sudo sh -c 'echo "Description=Deluge Bittorrent Client Daemon" >> /etc/systemd/system/deluged.service'
 	sudo sh -c 'echo "After=network-online.target" >> /etc/systemd/system/deluged.service'
 	sudo sh -c 'echo "" >> /etc/systemd/system/deluged.service'
-	sudo sh -c 'echo "[Service]"" >> /etc/systemd/system/deluged.service'
+	sudo sh -c 'echo "[Service]" >> /etc/systemd/system/deluged.service'
 	sudo sh -c 'echo "Type=simple" >> /etc/systemd/system/deluged.service'
 	sudo sh -c 'echo "User=deluge" >> /etc/systemd/system/deluged.service'
 	sudo sh -c 'echo "Group=deluge" >> /etc/systemd/system/deluged.service'
@@ -90,10 +90,12 @@ function install_deluged {
 
 	#Configure firewall
 	sudo iptables -A INPUT -p tcp --dport 9092 -j ACCEPT
-	sudo iptables -A OUTPUT -p tcp --dport 9093
+	sudo iptables -A OUTPUT -p tcp --dport 9093 -j ACCEPT
 
-	echo 'Change deluge-webui password'
-	echo 'Change deluged password'
+	echo 'Change deluge-webui password: http://localhost:9092'
+	echo 'Change deluged password: /var/lib/deluge/.config/deluge/auth'
+	echo 'Create certitifate and move key+cert to mkdir /var/lib/deluge/.config/deluge/ssl'
+	echo 'Configure ssl in web-ui'
 
 }
 
