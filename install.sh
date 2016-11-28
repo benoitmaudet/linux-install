@@ -58,6 +58,7 @@ function install_git_projects {
 	sudo git -C /opt clone https://github.com/SpiderLabs/Responder.git >> install.log 2>&1 &
 	sudo git -C /opt clone git://git.kali.org/packages/fierce.git >> install.log 2>&1 &
 	sudo git -C /opt clone https://github.com/derv82/wifite.git >> install.log 2>&1 &
+	sudo apt install -y apt install tshark reaver pyrit
 	sudo git -C /opt clone https://github.com/robertdavidgraham/masscan.git >> install.log 2>&1 &
 }
 
