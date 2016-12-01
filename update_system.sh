@@ -1,4 +1,13 @@
 #!/bin/bash
+
+#title           :update_system.sh
+#description     :This script updates my ubuntu system.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash update_system.sh
+#notes           :
+
 function update_system {
 	#Ubuntu updates
 	sudo apt update -y > /dev/null 2>&1

@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#title           :clean_system.sh
+#description     :This script cleans system logs and unused data.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash clean_system.sh
+#notes           :Do TODO
+
 function clean_system {
 	clean_metasoloit
 	clean_sqlmap

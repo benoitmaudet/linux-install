@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#title           :create_root_ssl_certificate.sh
+#description     :This script creates SSL root certificate.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash create_root_ssl_certificate.sh <rootCertificateFileName>
+#notes           :
+
 function create_root_certificate {
 	#Create root cert and self-sign it
 	openssl genrsa -des3 -out $1.key 2048

@@ -1,4 +1,13 @@
 #!/bin/bash
+
+#title           :install_metasploit.sh
+#description     :This script installs Metasploit.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash install_metasploit.sh
+#notes           :
+
 function install_metasploit {
 	sudo apt install -y build-essential libreadline-dev libssl-dev libpq5 libpq-dev libreadline5 libsqlite3-dev libpcap-dev openjdk-7-jre git-core autoconf postgresql pgadmin3 curl zlib1g-dev libxml2-dev libxslt1-dev vncviewer libyaml-dev curl zlib1g-dev >> install.log 2>&1
 	sudo apt install -y ruby-dev libpq-dev libpcap-dev >> install.log 2>&1

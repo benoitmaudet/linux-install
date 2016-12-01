@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#title           :disable_firewall.sh
+#description     :This script disables iptables.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash disable_firewall.sh
+#notes           :
+
 fw='sudo iptables'
 
 function flush_firewall {

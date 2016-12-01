@@ -1,4 +1,13 @@
 #!/bin/bash
+
+#title           :install.sh
+#description     :This script automatically installs my ubuntu system.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash install.sh
+#notes           :
+
 function check_internet {
 	echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
 	if [ $? -eq 0 ]; then
@@ -60,6 +69,7 @@ function install_git_projects {
 	sudo git -C /opt clone https://github.com/derv82/wifite.git >> install.log 2>&1 &
 	sudo apt install -y apt install tshark reaver pyrit
 	sudo git -C /opt clone https://github.com/robertdavidgraham/masscan.git >> install.log 2>&1 &
+	sudo git -C /opt clone https://github.com/benoitmaudet/development_templates.git >> install.log 2>&1 &
 }
 
 function install_graphic_interface {
@@ -71,7 +81,7 @@ function install_graphic_interface {
 
 	#terminator
 	sudo apt install -y terminator >> install.log 2>&1
-	
+
 	#fonts
 	sudo apt install -y fonts-font-awesome  >> install.log 2>&1
 	wget https://github.com/hbin/top-programming-fonts/raw/master/Menlo-Regular.ttf -P ~/.fonts/  >> install.log 2>&1
@@ -84,7 +94,7 @@ function install_graphic_interface {
 	fish -c "omf install agnoster & exit"
 
 	#Set fish as default shell
-	sudo chsh `whoami` -s /usr/bin/fish 
+	sudo chsh `whoami` -s /usr/bin/fish
 
 	cp .config/fish/functions/nmap.fish /home/`whoami`/.config/fish/functions/
 
@@ -174,7 +184,7 @@ function configure_network {
 	sudo echo "nospoof on" >> /etc/host.conf
 }
 
-function set_permissions {	
+function set_permissions {
 	#Home directory
 	sudo chown `whoami`:`whoami` -R /home/`whoami`
 	sudo chmod -R 600 /home/`whoami`
@@ -224,9 +234,9 @@ function set_cron {
 }
 
 function clean_groups_and_users {
-	
+
 	#Remove useless users
-	sudo userdel backup	
+	sudo userdel backup
 	sudo userdel sync
 	sudo userdel gnats
 	sudo userdel uucp
@@ -236,7 +246,7 @@ function clean_groups_and_users {
 	sudo userdel news
 	sudo userdel list
 	sudo userdel games
-	
+
 	#Remove useless groups
 	sudo groupdel backup
 	sudo groupdel irc
@@ -251,7 +261,7 @@ function clean_groups_and_users {
 	sudo groupdel list
 	sudo groupdel games
 	sudo groupdel www-data
-	sudo groupdel proxy	
+	sudo groupdel proxy
 }
 
 for i in "$@"
