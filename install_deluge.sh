@@ -1,4 +1,12 @@
-#/bin/bash
+#!/bin/bash
+
+#title           :install_deluge.sh
+#description     :This script installs deluge.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash install_deluge.sh
+#notes           :
 
 function install_deluged {
 	sudo apt install -y deluged deluge-webui deluge-console
@@ -6,13 +14,13 @@ function install_deluged {
 	#Creates deluge service user
 	sudo adduser --system --gecos "Deluge Service" --disabled-password --group --home /var/lib/deluge deluge
 
-	#Adds current user to deluge group 
+	#Adds current user to deluge group
 	sudo adduser `whoami` deluge
 
 	#Cleans init or upstart (used by old version of ubuntu)
 	sudo /etc/init.d/deluge-daemon stop
 	sudo rm /etc/init.d/deluge-daemon
-	sudo update-rc.d deluge-daemon remove 
+	sudo update-rc.d deluge-daemon remove
 	sudo stop deluged
 	sudo stop deluge-web
 	sudo rm /etc/init/deluge-web.conf
@@ -44,7 +52,7 @@ function install_deluged {
 	sudo sh -c 'echo "[Install]" >> /etc/systemd/system/deluged.service'
 	sudo sh -c 'echo "WantedBy=multi-user.target" >> /etc/systemd/system/deluged.service'
 
-	#Start the service and set auto start 
+	#Start the service and set auto start
 	sudo systemctl enable /etc/systemd/system/deluged.service
 	sudo systemctl start deluged
 	sudo systemctl status deluged
@@ -68,7 +76,7 @@ function install_deluged {
 	sudo sh -c 'echo "[Install]" >> /etc/systemd/system/deluge-web.service'
 	sudo sh -c 'echo "WantedBy=multi-user.target" >> /etc/systemd/system/deluge-web.service'
 
-	#Start the service and set auto start 
+	#Start the service and set auto start
 	sudo systemctl enable /etc/systemd/system/deluge-web.service
 	sudo systemctl start deluge-web
 	sudo systemctl status deluge-web

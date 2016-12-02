@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#title           :reset_firewall.sh
+#description     :This script resets iptables firewall.
+#author		 :Benoit MAUDET
+#date            :20161201
+#version         :0.1
+#usage		 :bash reset_firewall.sh
+#notes           :
+
 fw='sudo iptables'
 loop_ip='127.0.0.1'
 loop_net='127.0.0.0/8'
@@ -61,7 +69,7 @@ function reset_firewall {
     $fw -A INPUT -m pkttype --pkt-type broadcast -j DROP
     $fw -A INPUT -m pkttype --pkt-type multicast -j DROP
     $fw -A INPUT -j BLACKLIST
-    $fw -A INPUT -p icmp -m comment --comment "ICMP" -j ACCEPT    
+    $fw -A INPUT -p icmp -m comment --comment "ICMP" -j ACCEPT
   	#$fw -A INPUT -p tcp --dport 4444 -m comment --comment "Reverse TCP Shell" -j ACCEPT
 	#$fw -A INPUT -p tcp --dport 9092 -m comment --comment "Deluge web client" -j ACCEPT
 
