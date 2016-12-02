@@ -71,7 +71,7 @@ function install_graphic_interface {
 
 	#terminator
 	sudo apt install -y terminator >> install.log 2>&1
-	
+
 	#fonts
 	sudo apt install -y fonts-font-awesome  >> install.log 2>&1
 	wget https://github.com/hbin/top-programming-fonts/raw/master/Menlo-Regular.ttf -P ~/.fonts/  >> install.log 2>&1
@@ -172,6 +172,9 @@ function configure_network {
 	#/etc/host.conf
 	sudo echo "order bind,hosts" >> /etc/host.conf
 	sudo echo "nospoof on" >> /etc/host.conf
+
+	# Add Google DNS by default
+	sudo bash -c 'echo "prepend domain-name-servers 8.8.8.8;" >> /etc/dhcp/dhclient.conf'
 }
 
 function set_permissions {	
